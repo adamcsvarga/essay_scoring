@@ -8,6 +8,7 @@ Created on Tue May 10 10:48:56 2016
 import os, nltk
 from nltk.parse import stanford
 
+nltk.internals.config_java(options='-xmx7G')
 os.environ['JAVAHOME'] = 'C:\\Program Files\\Java\\jdk1.8.0_60\\bin'
 os.environ['STANFORD_PARSER'] = \
 'C:\\Users\\vurga\\AppData\\Roaming\\nltk_data\\stanford-parser-full-2015-04-20'
@@ -17,9 +18,12 @@ os.environ['STANFORD_MODELS'] = \
 
 def get_parse_trees(sentence_list):
     p = stanford.StanfordParser()
-    parsed_sentences = p.raw_parse_sents(sentence_list)
+    try:
+        parsed_sentences = p.raw_parse_sents(sentence_list)
     
-    return parsed_sentences
+        return parsed_sentences
+    except:
+        return None
     
 def traverse_and_count(tree):
     
@@ -62,7 +66,10 @@ def calculate(essay):
     
     sentences = nltk.sent_tokenize(str(essay))
     ps = get_parse_trees(sentences)
-    return avg_mod_count(ps)
+    if ps:    
+        return avg_mod_count(ps)
+    else:
+        return 0
     
 if __name__ == '__main__':
     sentences = ["She's the woman with the hat.", "I saw the nice faculty woman."]
