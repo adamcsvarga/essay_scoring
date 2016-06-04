@@ -122,7 +122,7 @@ def posngram(essay):
 	# trigrams
 	tgs = set()
 	for i in range(0, len(posd)-2):
-		tgs.add(posd[i][1], posd[i+1][1], posd[i+2][2])
+		tgs.add((posd[i][1], posd[i+1][1], posd[i+2][1]))
 		
 	return ugs, bgs, tgs
     
