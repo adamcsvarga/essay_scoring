@@ -11,6 +11,7 @@ v0.1 -- added readability score features (June 2 2016)
 import pandas as pd
 import lemma_count as lc
 #import modifier_count as mc, spellcheck as sp
+from sklearn.feature_extraction.text import CountVectorizer
 
 def read_data(filepath):
     return  pd.DataFrame.from_csv(filepath, sep="\t")
@@ -23,14 +24,14 @@ def wlen(essay):
     
 
 def create_features(dataframe):
-    feas = dataframe.head()[['essay_set','essay','domain1_score']].copy()
-    
-    # already computed
+    feas = dataframe[['essay_set','essay','domain1_score']].copy()
+    # already computed baseline
     """feas['lemmacount'] = feas['essay'].apply(lc.calculate)
     feas['modifier2np'] = feas['essay'].apply(mc.calculate)
     feas['avglen'] = feas['essay'].apply(wlen)
     feas['mispell'] = feas['essay'].apply(sp.check_spell)"""
     
+    # compute reading ease scores 
 #    feas['flesch'] = feas['essay'].apply(textstat.flesch_reading_ease)
 #    feas['smog'] = feas['essay'].apply(textstat.smog_index)
 #    feas['fleschkinc'] = feas['essay'].apply(textstat.flesch_kincaid_grade)
@@ -42,8 +43,21 @@ def create_features(dataframe):
 #    feas['gunning'] = feas['essay'].apply(textstat.gunning_fog)
 #    feas['textstand'] = feas['essay'].apply(textstat.text_standard)
 				
-    feas['uni'], feas['bi'], feas['tri'] = feas['essay'].apply(lc.posngram)
-
+    # getting binarized pos-ngrams    
+    feas['pos'] = feas['essay'].apply(lc.poslist)
+    cv = CountVectorizer(lowercase=False, ngram_range=(1,3), binary=True)
+    ngs = cv.fit_transform(feas['pos'])
+    posngrams = pd.DataFrame(ngs.toarray(), index=feas.index)
+    
+    # filter ngrams that occur less than 5 times
+    ngcount = posngrams.sum(axis=0).to_frame()
+    good_indices = ngcount[ngcount[0]>=5].index.values
+    filtered_posngs = posngrams[good_indices]
+    # convert to string
+    filtered_posngs.rename(columns = lambda x: str(x), inplace=True)
+    # join to features and drop POS feature
+    feas = pd.concat([feas, filtered_posngs], axis=1)
+    feas.drop('pos', axis=1, inplace=True)
     
     return feas
     

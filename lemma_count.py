@@ -101,6 +101,15 @@ def calculate(essay):
     lcount = count_lemmas(lemma_list)
     #return float(lcount) / token_count
     return lcount
+    
+def poslist(essay):
+    tokens = tokenize(str(essay).lower())
+    poslist = []
+    p = pos(tokens)
+    for pp in p:
+        poslist.append(pp[1])
+        
+    return ' '.join(poslist)
 				
 def posngram(essay):
 	
