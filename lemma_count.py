@@ -90,10 +90,10 @@ def count_lemmas(lemma_list):
 def calculate(essay):
     
     lemma_list = []
-    token_count = 0.0
+    #token_count = 0.0
     
     tokens = tokenize(str(essay).lower())
-    token_count = len(tokens)
+    #token_count = len(tokens)
     posd = pos(tokens)       
     lemmas = get_lemmas(posd)
     lemma_list += lemmas
@@ -101,6 +101,30 @@ def calculate(essay):
     lcount = count_lemmas(lemma_list)
     #return float(lcount) / token_count
     return lcount
+				
+def posngram(essay):
+	
+	#POS-tag essay
+	tokens = tokenize(str(essay).lower())
+	posd = pos(tokens)
+	
+	# unigrams
+	ugs = set()
+	for p in posd:
+		ugs.add(p[1])
+		
+	# bigrams
+	bgs = set()
+	for i in range(0, len(posd)-1):
+		bi = (posd[i][1], posd[i+1][1])
+		bgs.add(bi)
+		
+	# trigrams
+	tgs = set()
+	for i in range(0, len(posd)-2):
+		tgs.add(posd[i][1], posd[i+1][1], posd[i+2][2])
+		
+	return ugs, bgs, tgs
     
     
 if __name__ == '__main__':
