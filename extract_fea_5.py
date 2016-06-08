@@ -25,6 +25,7 @@ def wlen(essay):
 
 def create_features(dataframe):
     feas = dataframe[['essay_set','essay','domain1_score']].copy()
+    feas = feas[feas.essay_set == 5]
     # already computed baseline
     """feas['lemmacount'] = feas['essay'].apply(lc.calculate)
     feas['modifier2np'] = feas['essay'].apply(mc.calculate)
@@ -65,7 +66,7 @@ def create_features(dataframe):
     return feas
     
 def save2file(dataframe):
-    pd.DataFrame.to_csv(dataframe, 'train_feas.csv')
+    pd.DataFrame.to_csv(dataframe, 'train_feas_lsa_5.csv')
     
 if __name__ == '__main__':
     

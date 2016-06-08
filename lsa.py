@@ -9,6 +9,7 @@ Module for LSA-based scoring
 
 from __future__ import print_function
 import sklearn
+import numpy as np
 # Import all of the scikit learn stuff
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -22,29 +23,47 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning,
 module="pandas", lineno=570)
 
-def compute(essay_id, es, essay):
+def compute(df):
+    
+    # get file's index
+    ind = df.name  
+    es = df[0]
+    essay = df[1]
     
     trainfiles = \
     pd.DataFrame.from_csv('data/training_set_rel3.tsv',\
     sep="\t")
+    # drop test file from training if present
+    trainfiles.drop(ind, inplace=True)
     
+    scores = trainfiles[trainfiles.essay_set == es].domain1_score
+    
+    testfile = pd.Series(essay)    
     trainfiles = trainfiles[trainfiles.essay_set == es].essay
+    data = testfile.append(trainfiles)
+    #print(data)
     
     # create DTM
     vectorizer = CountVectorizer(min_df = 1, stop_words = 'english')
-    dtm = vectorizer.fit_transform(trainfiles)
+    dtm = vectorizer.fit_transform(data)
+        
     
     # Fit LSA
-    lsa = TruncatedSVD(2, algorithm = 'randomized')
+    lsa = TruncatedSVD(100, algorithm = 'randomized')
     dtm_lsa = lsa.fit_transform(dtm)
     dtm_lsa = Normalizer(copy=False).fit_transform(dtm_lsa)
     
+    similarity = np.asarray(np.asmatrix(dtm_lsa) * np.asmatrix(dtm_lsa).T)
+    simdf = pd.DataFrame(similarity,index=data.index, columns=data.index)
     
+    closest_id = simdf.iloc[0][1:].idxmax()
+    #print(ind, closest_id, simdf[0][1:].max())
     
+    return scores[closest_id]
+    
+        
 if __name__ == '__main__':
-    compute(1,1,"dfdfsd")
-    
-    
+    compute(1,"computers are cool.")
     
     
     
