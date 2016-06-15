@@ -24,6 +24,7 @@ def train_and_xval(dataframe):
     
     
     to_excl = ["essay_set", "essay", "domain1_score"]
+    #to_excl = ["essay_set", "essay", "domain1_score", "lemmacount", "modifier2np", "avglen", "mispell", "flesch", "smog", "fleschkinc", "aread", "dalechall", "diffwords", "linwrite", "gunning", "textstand", "lsascore"]
     predictors = ["lemmacount", "modifier2np", "avglen", "mispell", "flesch", "smog", "fleschkinc", "aread", "dalechall", "diffwords", "linwrite", "gunning", "textstand"]
     predictors = dataframe.columns.difference(to_excl)
     
@@ -46,8 +47,7 @@ def train_and_xval(dataframe):
     
     #alg = LinearRegression()
     #alg = SVR(kernel='linear')
-    alg = GradientBoostingRegressor(max_depth=4,\
-    min_samples_leaf=3)
+    alg = GradientBoostingRegressor(min_samples_leaf=2)
     
     # Drop sparse features
     #sel = VarianceThreshold(threshold=(.9 * (1 - .9)))
@@ -87,6 +87,6 @@ def train_and_xval(dataframe):
     return qwk.quadratic_weighted_kappa(dataframe["domain1_score"], predictions)
 
 if __name__ == '__main__':
-    df = read_data('1_full_lsa.csv')
+    df = read_data('8_full_lsa.csv')
     print(train_and_xval(df))
     
