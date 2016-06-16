@@ -20,6 +20,9 @@ def read_data(filename):
     
     return pd.read_csv(filename, index_col='essay_id', low_memory=False)
     
+def read_fulldata(filepath):
+    return  pd.DataFrame.from_csv(filepath, sep="\t")
+    
 def train_and_xval(dataframe):
     
     
@@ -86,7 +89,16 @@ def train_and_xval(dataframe):
     
     return qwk.quadratic_weighted_kappa(dataframe["domain1_score"], predictions)
 
+def ia_agreement(dataframe):
+    
+    return qwk.quadratic_weighted_kappa(dataframe["rater1_domain1"],\
+    dataframe["rater2_domain1"])
+
 if __name__ == '__main__':
-    df = read_data('8_full_lsa.csv')
-    print(train_and_xval(df))
+    #df = read_data('8_full_lsa.csv')
+    #print(train_and_xval(df))
+    
+    ia = read_fulldata('data/training_set_rel3.tsv')
+    print(ia_agreement(ia[ia.essay_set == 8]))
+    
     
