@@ -25,6 +25,12 @@ module="pandas", lineno=570)
 
 def compute(df):
     
+    """LSA computation
+    
+    Input: pandas dataframe
+    Output: score of the most similar essay to the first essay
+    """
+    
     # get file's index
     ind = df.name  
     es = df[0]
@@ -37,11 +43,11 @@ def compute(df):
     trainfiles.drop(ind, inplace=True)
     
     scores = trainfiles[trainfiles.essay_set == es].domain1_score
-    
+    # create training matrix
     testfile = pd.Series(essay)    
     trainfiles = trainfiles[trainfiles.essay_set == es].essay
     data = testfile.append(trainfiles)
-    #print(data)
+    
     
     # create DTM
     vectorizer = CountVectorizer(min_df = 1, stop_words = 'english')
@@ -57,13 +63,14 @@ def compute(df):
     simdf = pd.DataFrame(similarity,index=data.index, columns=data.index)
     
     closest_id = simdf.iloc[0][1:].idxmax()
-    #print(ind, closest_id, simdf[0][1:].max())
     
     return scores[closest_id]
     
         
 if __name__ == '__main__':
-    compute(1,"computers are cool.")
+    
+    # example computation
+    compute("computers are cool.")
     
     
     
