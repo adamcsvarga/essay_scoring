@@ -91,6 +91,20 @@ def calculate(essay):
         return avg_mod_count(ps)
     else:
         return 0
+        
+def avg_depth(ps):
+
+    return sum(t.height() for t in ps) / len(ps)
+        
+def depth(essay):
+    
+    
+    sentences = nltk.sent_tokenize(str(essay))
+    ps = get_parse_trees(sentences)
+    if ps:    
+        return avg_depth(ps)
+    else:
+        return 0
     
 if __name__ == '__main__':
     

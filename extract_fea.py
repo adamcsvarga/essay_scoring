@@ -32,6 +32,7 @@ def wlen(essay):
     Input: essay (str)
     Output: average word length (float)
     """
+    
     ws = str(essay).split()
     return sum(len(word) for word in ws) / len(ws)
     

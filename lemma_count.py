@@ -110,6 +110,10 @@ def poslist(essay):
         poslist.append(pp[1])
         
     return ' '.join(poslist)
+    
+def comma_count(essay):
+    
+    return poslist(essay).count(',')
 				
 def posngram(essay):
 	
